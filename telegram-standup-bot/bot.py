@@ -216,6 +216,8 @@ async def on_shutdown(dp: Dispatcher):
     try:
         with open('/data/storage.pickle', 'w') as f:
             pickle.dump(dp.storage.data, f)
+    except:
+        logger.exception("Could not write data")
     await dp.storage.close()
     await dp.storage.wait_closed()
     await bot.close()
