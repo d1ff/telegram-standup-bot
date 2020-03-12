@@ -1,15 +1,19 @@
 [[package]]
 category = "main"
-description = "Is a pretty simple and fully asynchronous library for Telegram Bot API"
+description = "Is a pretty simple and fully asynchronous framework for Telegram Bot API"
 name = "aiogram"
 optional = false
 python-versions = "*"
-version = "2.0.1"
+version = "2.6.1"
 
 [package.dependencies]
 Babel = ">=2.6.0"
-aiohttp = ">=3.4.4"
-certifi = ">=2018.8.24"
+aiohttp = ">=3.5.4,<4.0.0"
+certifi = ">=2019.3.9"
+
+[package.extras]
+fast = ["uvloop (>=0.14.0,<0.15.0)", "ujson (>=1.35)"]
+proxy = ["aiohttp-socks (>=0.3.4,<0.4.0)"]
 
 [[package]]
 category = "main"
@@ -86,7 +90,7 @@ description = "Python package for providing Mozilla's CA Bundle."
 name = "certifi"
 optional = false
 python-versions = "*"
-version = "2018.11.29"
+version = "2019.11.28"
 
 [[package]]
 category = "main"
@@ -248,13 +252,13 @@ idna = ">=2.0"
 multidict = ">=4.0"
 
 [metadata]
-content-hash = "9e395083e23c83d0deb823b1a9f975494b3a2bcee9830f293b8e8847e5340d9a"
+content-hash = "2afc386ca0a4fd5d2bff21dff2e18d939b78cb964ba96a23c9e06d84ab0927fc"
 python-versions = "^3.7"
 
 [metadata.files]
 aiogram = [
-    {file = "aiogram-2.0.1-py3-none-any.whl", hash = "sha256:0bc848c0a8674d21c66da41057b68c6544a7ed85df012c733343a19fbb48784d"},
-    {file = "aiogram-2.0.1.tar.gz", hash = "sha256:604d063d334de5c1423f9a6a613e051124260cfd048890c63a3efe19836c581f"},
+    {file = "aiogram-2.6.1-py3-none-any.whl", hash = "sha256:4a9b643927992647afacba822699799d8e273d2da93db30cd1ffa350166822a9"},
+    {file = "aiogram-2.6.1.tar.gz", hash = "sha256:a420915727ec8d992dda96c9ce6f30d0287d58622f6adac477cae37e74c0e29f"},
 ]
 aiohttp = [
     {file = "aiohttp-3.5.4-cp35-cp35m-macosx_10_10_x86_64.whl", hash = "sha256:199f1d106e2b44b6dacdf6f9245493c7d716b01d0b7fbe1959318ba4dc64d1f5"},
@@ -300,8 +304,8 @@ babel = [
     {file = "Babel-2.6.0.tar.gz", hash = "sha256:8cba50f48c529ca3fa18cf81fa9403be176d374ac4d60738b839122dfaaa3d23"},
 ]
 certifi = [
-    {file = "certifi-2018.11.29-py2.py3-none-any.whl", hash = "sha256:993f830721089fef441cdfeb4b2c8c9df86f0c63239f06bd025a76a7daddb033"},
-    {file = "certifi-2018.11.29.tar.gz", hash = "sha256:47f9c83ef4c0c621eaef743f133f09fa8a74a9b75f037e8624f83bd1b6626cb7"},
+    {file = "certifi-2019.11.28-py2.py3-none-any.whl", hash = "sha256:017c25db2a153ce562900032d5bc68e9f191e44e9a0f762f373977de9df1fbb3"},
+    {file = "certifi-2019.11.28.tar.gz", hash = "sha256:25b64c7da4cd7479594d035c08c2d809eb4aab3a26e5a990ea98cc450c320f1f"},
 ]
 chardet = [
     {file = "chardet-3.0.4-py2.py3-none-any.whl", hash = "sha256:fc323ffcaeaed0e0a02bf4d117757b98aed530d9ed4531e3e15460124c106691"},

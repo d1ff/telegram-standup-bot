@@ -18,7 +18,7 @@ services:
       - mongodb
     volumes:
       - .:/app
-  mongo:
+  mongodb:
     image: 'mongo'
     volumes:
       - /var/standup/mongo:/data/db
