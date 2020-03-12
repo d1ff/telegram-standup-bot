@@ -11,10 +11,5 @@ def convert_to_str_report(user_data: dict) -> str:
 
 
 async def get_target_chat(user_id: int) -> int:
-    for chat_id, chat_data in dp.storage.data.items():
-        if (
-            int(chat_id) != user_id
-            and str(user_id) in chat_data
-        ):
-            return int(chat_id)
-    return user_id
+    data = await dp.storage.get_data(chat=None, user=user_id)
+    return data.get('chat_id', user_id)

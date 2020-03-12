@@ -203,7 +203,7 @@ async def reminders_manager():
 async def on_startup(_):
     await register_handlers()
     loop = asyncio.get_event_loop()
-    loop.create_task(reminders_manager())
+    #loop.create_task(reminders_manager())
 
 
 async def on_shutdown(dp: Dispatcher):
