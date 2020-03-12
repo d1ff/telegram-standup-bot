@@ -199,6 +199,11 @@ async def reminders_manager():
                         f"user {user_id} were removed from standup"
                     )
         await asyncio.sleep(5)
+        try:
+            with open('/data/storage.pickle', 'w') as f:
+                pickle.dump(dp.storage.data, f)
+        except:
+            logger.exception("Could not write data")
 
 
 async def on_startup(_):
@@ -209,7 +214,7 @@ async def on_startup(_):
     except:
         logger.exception("Could not load data")
     loop = asyncio.get_event_loop()
-    #loop.create_task(reminders_manager())
+    loop.create_task(reminders_manager())
 
 
 async def on_shutdown(dp: Dispatcher):
