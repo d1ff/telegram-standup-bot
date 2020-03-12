@@ -14,12 +14,7 @@ services:
           memory: 50M
       restart_policy:
         condition: on-failure
-    depends_on:
-      - mongodb
     volumes:
       - .:/app
-  mongodb:
-    image: 'mongo'
-    volumes:
-      - /var/standup/mongo:/data/db
+      - /var/standup:/data
 

@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import pickle
 
 from aiogram import types, Dispatcher
 from aiogram.utils import executor
@@ -202,11 +203,19 @@ async def reminders_manager():
 
 async def on_startup(_):
     await register_handlers()
+    try:
+        with open('/data/storage.pickle', 'r') as f:
+            dp.storage.data = pickle.load(f)
+    except:
+        logger.exception("Could not load data")
     loop = asyncio.get_event_loop()
     #loop.create_task(reminders_manager())
 
 
 async def on_shutdown(dp: Dispatcher):
+    try:
+        with open('/data/storage.pickle', 'w') as f:
+            pickle.dump(dp.storage.data, f)
     await dp.storage.close()
     await dp.storage.wait_closed()
     await bot.close()
