@@ -20,9 +20,9 @@ async def add_me(msg: types.Message):
     )
     await state.set_state(BotStates.STANDBY[0])
 
-    await bot.send_message(
-        msg.from_user.id,
-        r"You were added to the standup! Use `/report` command to start "
+    await msg.reply(
+        r"You were added to the standup! Use `/report` command in private chat"
+        r" to start "
         r"the standup",
     )
 
@@ -45,8 +45,7 @@ async def remove_me(msg: types.Message):
     )
     await state.reset_state()
 
-    await bot.send_message(
-        msg.from_user.id,
+    await msg.reply(
         r"You were removed from the standup! "
     )
 

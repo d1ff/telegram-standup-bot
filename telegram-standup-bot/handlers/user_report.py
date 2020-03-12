@@ -1,3 +1,5 @@
+import logging
+
 from aiogram import types
 
 from .utils import (
@@ -111,9 +113,17 @@ async def process_absences(msg: types.Message):
         user=user.id
     )
     target_chat = await get_target_chat(user.id)
-    await bot.send_message(
-        target_chat, convert_to_str_report(report)
-    )
+    try:
+        await bot.send_message(
+            target_chat, convert_to_str_report(report)
+        )
+    except:
+        await bot.send_message(
+            target_chat, convert_to_str_report(report),
+            parse_mode=None
+        )
+        logger.exception("Could not send standup message")
+
 
     await dp.storage.reset_data(user=user.id)
 
