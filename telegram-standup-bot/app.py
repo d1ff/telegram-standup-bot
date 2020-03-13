@@ -15,7 +15,7 @@ LOGGING_LEVEL = env(
     "LOGGING_LEVEL", postprocessor=str.upper
 )
 
-bot = Bot(token=BOT_TOKEN, parse_mode="MarkdownV2")
+bot = Bot(token=BOT_TOKEN, parse_mode="markdown")
 dp = Dispatcher(bot, storage=MemoryStorage())
 
 

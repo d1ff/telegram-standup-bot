@@ -1,10 +1,11 @@
 from ..app import dp
+from aiogram.utils.markdown import escape_md
 
 
 def convert_to_str_report(user_data: dict) -> str:
     return "\n\n".join(
         [
-            f"*{ch}*\n{descr}"
+            "*%s*\n%s" % (ch, escape_md(descr))
             for ch, descr in user_data.items()
         ]
     )
