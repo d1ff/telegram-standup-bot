@@ -118,11 +118,13 @@ async def process_absences(msg: types.Message):
             target_chat, convert_to_str_report(report)
         )
     except:
-        await bot.send_message(
-            target_chat, convert_to_str_report(report),
-            parse_mode=None
-        )
-        logger.exception("Could not send standup message")
+        try:
+            await bot.send_message(
+                target_chat, convert_to_str_report(report),
+                parse_mode=None
+            )
+        except:
+            logger.exception("Could not send standup message")
 
 
     await dp.storage.reset_data(user=user.id)

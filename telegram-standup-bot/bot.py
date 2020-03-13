@@ -200,7 +200,7 @@ async def reminders_manager():
                     )
         await asyncio.sleep(5)
         try:
-            with open('/data/storage.pickle', 'w') as f:
+            with open('/data/storage.pickle', 'wb') as f:
                 pickle.dump(dp.storage.data, f)
         except:
             logger.exception("Could not write data")
@@ -209,7 +209,7 @@ async def reminders_manager():
 async def on_startup(_):
     await register_handlers()
     try:
-        with open('/data/storage.pickle', 'r') as f:
+        with open('/data/storage.pickle', 'rb') as f:
             dp.storage.data = pickle.load(f)
     except:
         logger.exception("Could not load data")
@@ -219,7 +219,7 @@ async def on_startup(_):
 
 async def on_shutdown(dp: Dispatcher):
     try:
-        with open('/data/storage.pickle', 'w') as f:
+        with open('/data/storage.pickle', 'wb') as f:
             pickle.dump(dp.storage.data, f)
     except:
         logger.exception("Could not write data")
