@@ -150,6 +150,10 @@ async def send_reminders(chat_id: int, user_id: int):
                 logger.info(f'Do not send reminder for {user_id}')
                 await asyncio.sleep(1 * 3600)
                 continue
+        else:
+            await asyncio.sleep(1 * 3600)
+            continue
+
         try:
             await bot.send_message(
                 user_id,
@@ -217,9 +221,9 @@ async def on_startup(_):
             mem.data = pickle.load(f)
             for chat_id, users_data in mem.data.items():
                 for user_id in users_data.keys():
-                    await dp.storaget.set_data(
-                        chat_id, user_id,
-                            mem.get_data(chat_id, user_id))
+                    data = await mem.get_data(chat=chat_id, user=user_id)
+                    await dp.storage.set_data(
+                        chat=chat_id, user=user_id, data=data)
     except:
         logger.exception("Could not load data")
     loop = asyncio.get_event_loop()
