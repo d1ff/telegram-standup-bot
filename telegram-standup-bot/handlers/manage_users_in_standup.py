@@ -19,11 +19,6 @@ async def add_me(msg: types.Message):
         user=msg.from_user.id, chat=msg.from_user.id
     )
     await state.set_state(BotStates.STANDBY[0])
-    await dp.storage.set_data(
-        chat=None,
-        user=msg.from_user.id,
-        data={"chat_id": chat.id
-    })
 
     await msg.reply(
         r"You were added to the standup! Use `/report` command in private chat"
@@ -44,9 +39,6 @@ async def remove_me(msg: types.Message):
 
     await dp.storage.reset_data(
         chat=chat.id, user=msg.from_user.id
-    )
-    await dp.storage.reset_data(
-        chat=None, user=msg.from_user.id
     )
     state = dp.current_state(
         user=msg.from_user.id, chat=msg.from_user.id

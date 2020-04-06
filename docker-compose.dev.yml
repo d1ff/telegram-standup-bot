@@ -8,3 +8,9 @@ services:
     image: *img_tag
     volumes:
     - .:/app
+    depends_on:
+      - mongodb
+  mongodb:
+    image: mongo
+    volumes:
+    - ./mongo:/data/db

@@ -2,9 +2,7 @@ import logging
 import sys
 
 from aiogram import Dispatcher, Bot
-from aiogram.contrib.fsm_storage.memory import (
-    MemoryStorage,
-)
+from .storage import MongoStorage
 from envparse import env
 
 __version__ = "0.0.1"
@@ -15,8 +13,16 @@ LOGGING_LEVEL = env(
     "LOGGING_LEVEL", postprocessor=str.upper
 )
 
-bot = Bot(token=BOT_TOKEN, parse_mode="markdown")
-dp = Dispatcher(bot, storage=MemoryStorage())
+MONGO_HOST = env.str('MONGO_HOST')
+MONGO_PORT = env.int('MONGO_PORT', default=27017)
+MONGO_DB = env.str('MONGO_DB', default='standups')
+
+PROXY = env.str('PROXY', default=None)
+
+storage = MongoStorage(MONGO_HOST, MONGO_PORT, MONGO_DB, index=False)
+bot = Bot(token=BOT_TOKEN, parse_mode="Markdown", proxy=PROXY)
+dp = Dispatcher(bot,
+                storage=storage)
 
 
 def setup_logger():

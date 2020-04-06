@@ -1,9 +1,11 @@
 import asyncio
 import logging
 import pickle
+import datetime
 
 from aiogram import types, Dispatcher
 from aiogram.utils import executor
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
 from .app import bot, dp
 from .handlers.manage_users_in_standup import (
@@ -139,8 +141,15 @@ async def register_handlers():
     )
 
 
-async def send_reminders(user_id: int):
+async def send_reminders(chat_id: int, user_id: int):
     while True:
+        user = await dp.storage.get_data(chat=chat_id, user=user_id)
+        now = datetime.datetime.now()
+        if user and 'last_report' in user:
+            if now - user['last_report'] < datetime.timedelta(hours=24):
+                logger.info(f'Do not send reminder for {user_id}')
+                await asyncio.sleep(1 * 3600)
+                continue
         try:
             await bot.send_message(
                 user_id,
@@ -159,58 +168,58 @@ async def reminders_manager():
     while True:
         for (
             chat_id,
-            users_data,
-        ) in dp.storage.data.items():
-            for user_id in users_data.keys():
+            user_id,
+        ) in await dp.storage.get_data_list():
+            user = await dp.storage.get_data(
+                chat=chat_id, user=user_id
+            )
+            if not user or chat_id == user_id:
+                break
+            if (
+                user["active"]
+                and not user["task_id"]
+            ):
+                task = loop.create_task(
+                    send_reminders(chat_id, user_id)
+                )
+                await dp.storage.update_data(
+                    chat=chat_id,
+                    user=user_id,
+                    data={"task_id": id(task)},
+                ),
+                logger.info(
+                    f"user {user_id} were added to standup"
+                )
+            if (
+                not user["active"]
+                and user["task_id"]
+            ):
                 user = await dp.storage.get_data(
                     chat=chat_id, user=user_id
                 )
-                if not user or chat_id == user_id:
-                    break
-                if (
-                    user["active"]
-                    and not user["task_id"]
-                ):
-                    task = loop.create_task(
-                        send_reminders(user_id)
-                    )
-                    await dp.storage.update_data(
-                        chat=chat_id,
-                        user=user_id,
-                        data={"task_id": id(task)},
-                    ),
-                    logger.info(
-                        f"user {user_id} were added to standup"
-                    )
-                if (
-                    not user["active"]
-                    and user["task_id"]
-                ):
-                    user = await dp.storage.get_data(
-                        chat=chat_id, user=user_id
-                    )
-                    await cancel_task(user["task_id"])
-                    await dp.storage.update_data(
-                        chat=chat_id,
-                        user=user_id,
-                        data={"task_id": None},
-                    )
-                    logger.info(
-                        f"user {user_id} were removed from standup"
-                    )
+                await cancel_task(user["task_id"])
+                await dp.storage.update_data(
+                    chat=chat_id,
+                    user=user_id,
+                    data={"task_id": None},
+                )
+                logger.info(
+                    f"user {user_id} were removed from standup"
+                )
         await asyncio.sleep(5)
-        try:
-            with open('/data/storage.pickle', 'wb') as f:
-                pickle.dump(dp.storage.data, f)
-        except:
-            logger.exception("Could not write data")
 
 
 async def on_startup(_):
     await register_handlers()
     try:
         with open('/data/storage.pickle', 'rb') as f:
-            dp.storage.data = pickle.load(f)
+            mem = MemoryStorage()
+            mem.data = pickle.load(f)
+            for chat_id, users_data in mem.data.items():
+                for user_id in users_data.keys():
+                    await dp.storaget.set_data(
+                        chat_id, user_id,
+                            mem.get_data(chat_id, user_id))
     except:
         logger.exception("Could not load data")
     loop = asyncio.get_event_loop()
@@ -218,11 +227,24 @@ async def on_startup(_):
 
 
 async def on_shutdown(dp: Dispatcher):
-    try:
-        with open('/data/storage.pickle', 'wb') as f:
-            pickle.dump(dp.storage.data, f)
-    except:
-        logger.exception("Could not write data")
+    for ( chat_id,
+            user_id,) in await dp.storage.get_data_list():
+        user = await dp.storage.get_data(
+            chat=chat_id, user=user_id
+        )
+        if not user or chat_id == user_id:
+            break
+        if user["task_id"]:
+            try:
+                await cancel_task(user["task_id"])
+            except:
+                logging.exception("Unable to cancel task")
+            await dp.storage.update_data(
+                chat=chat_id,
+                user=user_id,
+                data={"task_id": None},
+            )
+
     await dp.storage.close()
     await dp.storage.wait_closed()
     await bot.close()

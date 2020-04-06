@@ -1,4 +1,5 @@
 import logging
+import datetime
 
 from aiogram import types
 
@@ -8,6 +9,8 @@ from .utils import (
 )
 from ..app import dp
 from ..structs import BotStates
+
+from ..reports import Report
 
 
 async def stop_report(msg: types.Message):
@@ -120,14 +123,26 @@ async def process_absences(msg: types.Message):
     except:
         try:
             await bot.send_message(
-                target_chat, convert_to_str_report(report),
-                parse_mode=None
+                target_chat, convert_to_str_report(report, True)
             )
         except:
-            logger.exception("Could not send standup message")
-
+            logging.exception("Could not send standup message")
 
     await dp.storage.reset_data(user=user.id)
+    # save datetime of last report
+    now = datetime.datetime.now()
+    await dp.storage.update_data(
+        chat=target_chat,
+        user=user.id,
+        data={'last_report': now}
+    )
+    user_name = f"{user.first_name} {user.last_name}" if user.last_name else user.first_name
+    report.update({"user": user_name, "date": now})
+    report.pop('Report by')
+    try:
+        await Report(**report).commit()
+    except:
+        logging.exception("Unable to save report")
 
     state = dp.current_state(user=user.id)
     await state.set_state(BotStates.STANDBY[0])
