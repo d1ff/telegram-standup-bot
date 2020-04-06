@@ -178,7 +178,7 @@ async def reminders_manager():
                 chat=chat_id, user=user_id
             )
             if not user or chat_id == user_id:
-                break
+                continue
             if (
                 user["active"]
                 and not user["task_id"]
@@ -222,8 +222,14 @@ async def on_startup(_):
             for chat_id, users_data in mem.data.items():
                 for user_id in users_data.keys():
                     data = await mem.get_data(chat=chat_id, user=user_id)
+                    if 'task_id' in data: data['task_id'] = None
                     await dp.storage.set_data(
-                        chat=chat_id, user=user_id, data=data)
+                        chat=int(chat_id), user=int(user_id), data=data)
+            for chat_id, users_data in mem.data.items():
+                for user_id in users_data.keys():
+                    state = await mem.get_state(chat=chat_id, user=user_id)
+                    await dp.storage.set_state(
+                        chat=int(chat_id), user=int(user_id), state=state)
     except:
         logger.exception("Could not load data")
     loop = asyncio.get_event_loop()
@@ -237,7 +243,7 @@ async def on_shutdown(dp: Dispatcher):
             chat=chat_id, user=user_id
         )
         if not user or chat_id == user_id:
-            break
+            continue
         if user["task_id"]:
             try:
                 await cancel_task(user["task_id"])

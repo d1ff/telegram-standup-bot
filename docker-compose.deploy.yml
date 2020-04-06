@@ -11,6 +11,7 @@ services:
     restart: on-failure
     volumes:
       - .:/app
+      - /var/standup:/data
   mongodb:
     image: mongo
     restart: on-failure
