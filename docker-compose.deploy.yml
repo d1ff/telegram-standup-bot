@@ -17,3 +17,16 @@ services:
     restart: on-failure
     volumes:
     - ./mongo:/data/db
+  logger_api:
+    build:
+      context: telegram-standup-logger
+      cache_from:
+      - &img_tag telegram-telegram-standup-logger
+    image: *img_tag
+    depends_on:
+      - mongodb
+    restart: on-failure
+    ports:
+      - "8999:8000"
+    volumes:
+      - ./telegram-standup-logger:/app
