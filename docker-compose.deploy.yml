@@ -21,8 +21,8 @@ services:
     build:
       context: telegram-standup-logger
       cache_from:
-      - &img_tag telegram-telegram-standup-logger
-    image: *img_tag
+        - &logger_tag telegram-telegram-standup-logger
+    image: *logger_tag
     depends_on:
       - mongodb
     restart: on-failure
