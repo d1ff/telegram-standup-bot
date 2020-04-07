@@ -30,6 +30,6 @@ ENV PORT 8000
 # expose port and define CMD
 EXPOSE ${PORT}
 #define command line
-CMD uvicorn telegram_standup_logger:app
+CMD uvicorn --host ${HOST} --port ${PORT} telegram_standup_logger:app
 # copy app sources
 COPY . .

@@ -30,3 +30,16 @@ services:
       - "8999:8000"
     volumes:
       - ./telegram-standup-logger:/app
+  logger_viewer:
+    build:
+      context: telegram-standup-viewer
+      cache_from:
+        - &viewer_tag telegram-telegram-standup-viewer
+    env_file:
+      - viewer.env
+    image: *viewer_tag
+    depends_on:
+      - logger_api
+    restart: on-failure
+    ports:
+      - "8980:80"

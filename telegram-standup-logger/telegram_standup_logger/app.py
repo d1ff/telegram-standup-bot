@@ -1,11 +1,11 @@
 __version__ = '0.1.0'
 
 from motor.motor_asyncio import AsyncIOMotorClient
-from umongo import fields, Instance, Document
 
 from bson.objectid import ObjectId
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from envparse import env
 
@@ -19,8 +19,11 @@ mongo = AsyncIOMotorClient(host=MONGO_HOST, port=MONGO_PORT)
 
 db = mongo[MONGO_DB]
 
-
 app = FastAPI()
+
+app.add_middleware(
+  CORSMiddleware,
+  allow_origins=['*'])
 
 @app.get("/users")
 async def list_users():
