@@ -142,14 +142,15 @@ async def register_handlers():
 
 
 async def send_reminders(chat_id: int, user_id: int):
+    h24 = datetime.timedelta(hours=24)
     while True:
         user = await dp.storage.get_data(chat=chat_id, user=user_id)
         now = datetime.datetime.now()
         if user and 'last_report' in user:
             td = now - user['last_report']
-            if td < datetime.timedelta(hours=24):
+            if td < h24:
                 logger.info(f'Do not send reminder for {user_id}, {td} remaining')
-                await asyncio.sleep(td.total_seconds())
+                await asyncio.sleep((h24 - td).total_seconds())
         else:
             await asyncio.sleep(3600 / 2)
             continue
