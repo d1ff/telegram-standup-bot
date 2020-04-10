@@ -146,12 +146,12 @@ async def send_reminders(chat_id: int, user_id: int):
         user = await dp.storage.get_data(chat=chat_id, user=user_id)
         now = datetime.datetime.now()
         if user and 'last_report' in user:
-            if now - user['last_report'] < datetime.timedelta(hours=24):
-                logger.info(f'Do not send reminder for {user_id}')
-                await asyncio.sleep(1 * 3600)
-                continue
+            td = now - user['last_report']
+            if td < datetime.timedelta(hours=24):
+                logger.info(f'Do not send reminder for {user_id}, {td} remaining')
+                await asyncio.sleep(td.total_seconds())
         else:
-            await asyncio.sleep(1 * 3600)
+            await asyncio.sleep(3600 / 2)
             continue
 
         try:
@@ -164,7 +164,7 @@ async def send_reminders(chat_id: int, user_id: int):
         except asyncio.CancelledError:
             return
         else:
-            await asyncio.sleep(1 * 24 * 3600)
+            await asyncio.sleep(1 * 12 * 3600)
 
 
 async def reminders_manager():
@@ -215,23 +215,6 @@ async def reminders_manager():
 
 async def on_startup(_):
     await register_handlers()
-    try:
-        with open('/data/storage.pickle', 'rb') as f:
-            mem = MemoryStorage()
-            mem.data = pickle.load(f)
-            for chat_id, users_data in mem.data.items():
-                for user_id in users_data.keys():
-                    data = await mem.get_data(chat=chat_id, user=user_id)
-                    if 'task_id' in data: data['task_id'] = None
-                    await dp.storage.set_data(
-                        chat=int(chat_id), user=int(user_id), data=data)
-            for chat_id, users_data in mem.data.items():
-                for user_id in users_data.keys():
-                    state = await mem.get_state(chat=chat_id, user=user_id)
-                    await dp.storage.set_state(
-                        chat=int(chat_id), user=int(user_id), state=state)
-    except:
-        logger.exception("Could not load data")
     loop = asyncio.get_event_loop()
     loop.create_task(reminders_manager())
 
