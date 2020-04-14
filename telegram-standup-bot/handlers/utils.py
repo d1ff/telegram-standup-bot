@@ -3,10 +3,16 @@ from aiogram.utils.markdown import escape_md
 
 
 def convert_to_str_report(user_data: dict, escape: bool = False) -> str:
+    escaped_data = dict()
+    if escape:
+        for key, value in user_data.items():
+            escaped_data[key] = escape_md(val) if 'Report' not in key else val
+    else:
+        escaped_data = user_data
     return "\n\n".join(
         [
-            "*%s*\n%s" % (ch, escape_md(descr) if escape else descr)
-            for ch, descr in user_data.items()
+            "*%s*\n%s" % (ch, descr)
+            for ch, descr in escaped_data.items()
         ]
     )
 
