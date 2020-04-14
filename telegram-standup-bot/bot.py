@@ -170,6 +170,19 @@ async def send_reminders(chat_id: int, user_id: int):
 
 async def reminders_manager():
     loop = asyncio.get_event_loop()
+    for ( chat_id,
+            user_id,) in await dp.storage.get_data_list():
+        user = await dp.storage.get_data(
+            chat=chat_id, user=user_id
+        )
+        if not user or chat_id == user_id:
+            continue
+        if user["task_id"]:
+            await dp.storage.update_data(
+                chat=chat_id,
+                user=user_id,
+                data={"task_id": None},
+            )
     while True:
         for (
             chat_id,
