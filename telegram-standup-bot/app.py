@@ -20,7 +20,7 @@ MONGO_DB = env.str('MONGO_DB', default='standups')
 PROXY = env.str('PROXY', default=None)
 
 storage = MongoStorage(MONGO_HOST, MONGO_PORT, MONGO_DB, index=False)
-bot = Bot(token=BOT_TOKEN, parse_mode="Markdown", proxy=PROXY)
+bot = Bot(token=BOT_TOKEN, parse_mode="HTML", proxy=PROXY)
 dp = Dispatcher(bot,
                 storage=storage)
 

@@ -21,7 +21,7 @@ async def add_me(msg: types.Message):
     await state.set_state(BotStates.STANDBY[0])
 
     await msg.reply(
-        r"You were added to the standup! Use `/report` command in private chat"
+        r"You were added to the standup! Use <pre>/report</pre> command in private chat"
         r" to start "
         r"the standup",
     )
@@ -57,6 +57,6 @@ async def new_member_welcome(msg: types.Message):
         f"Hi, {user.first_name}!\n\n"
         f"I am TBE standup bot\n"
         f"If you want me to add you to the"
-        f" standup then type `/add_me` command",
+        f" standup then type <pre>/add_me</pre> command",
         reply=False,
     )

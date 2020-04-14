@@ -121,33 +121,30 @@ async def process_absences(msg: types.Message):
             target_chat, convert_to_str_report(report)
         )
     except:
+        logging.exception("Could not send standup message")
+        await msg.reply(
+            "Error occured sending report", reply=False)
+    finally:
+        await dp.storage.reset_data(user=user.id)
+        # save datetime of last report
+        now = datetime.datetime.now()
+        await dp.storage.update_data(
+            chat=target_chat,
+            user=user.id,
+            data={'last_report': now}
+        )
+        user_name = f"{user.first_name} {user.last_name}" if user.last_name else user.first_name
+        report.update({"user": user_name, "date": now})
+        report.pop('Report by')
         try:
-            await bot.send_message(
-                target_chat, convert_to_str_report(report, True)
-            )
+            await Report(**report).commit()
         except:
-            logging.exception("Could not send standup message")
+            logging.exception("Unable to save report")
 
-    await dp.storage.reset_data(user=user.id)
-    # save datetime of last report
-    now = datetime.datetime.now()
-    await dp.storage.update_data(
-        chat=target_chat,
-        user=user.id,
-        data={'last_report': now}
-    )
-    user_name = f"{user.first_name} {user.last_name}" if user.last_name else user.first_name
-    report.update({"user": user_name, "date": now})
-    report.pop('Report by')
-    try:
-        await Report(**report).commit()
-    except:
-        logging.exception("Unable to save report")
+        state = dp.current_state(user=user.id)
+        await state.set_state(BotStates.STANDBY[0])
 
-    state = dp.current_state(user=user.id)
-    await state.set_state(BotStates.STANDBY[0])
-
-    await msg.reply(
-        f"Thank you for your time, {user.first_name}",
-        reply=False,
-    )
+        await msg.reply(
+            f"Thank you for your time, {user.first_name}",
+            reply=False,
+        )
